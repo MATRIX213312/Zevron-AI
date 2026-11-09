@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Zevron AI</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23111'/%3E%3Cpath d='M9 9.5h14L9 22.5h14' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#fff;--side:#f4f4f5;--card:#fff;--text:#1f1f22;--muted:#8a8a90;--line:#e4e4e7;--accent:#3f3f46;--accent-h:#18181b;--user:#f1f1f3;--code:#f4f4f5}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1c1e;--side:#151516;--card:#262628;--text:#f2f2f3;--muted:#9a9aa0;--line:#38383b;--accent:#d4d4d8;--accent-h:#fff;--user:#2c2c2f;--code:#151516}}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{height:100dvh;display:flex;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* боковая панель */
+#side{width:280px;flex:none;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:14px 10px;padding-top:calc(14px + env(safe-area-inset-top,0px));transition:transform .25s}
+.brand{display:flex;align-items:center;gap:9px;padding:4px 10px 14px;font:600 23px Georgia,serif}
+.logo{width:32px;height:32px;border-radius:9px;background:var(--text);color:var(--bg);display:grid;place-items:center}
+#new{display:flex;align-items:center;gap:8px;width:100%;padding:10px 12px;border-radius:10px;font-weight:500;color:var(--accent)}
+#new:hover,.item:hover{background:rgba(127,127,127,.12)}
+.label{padding:16px 12px 6px;font-size:12.5px;color:var(--muted)}
+#list{flex:1;overflow-y:auto}
+.item{display:flex;align-items:center;border-radius:10px}
+.item.on{background:rgba(127,127,127,.18)}
+.item .t{flex:1;min-width:0;text-align:left;padding:8px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14.5px}
+.item .x{opacity:0;padding:6px 10px;color:var(--muted)}
+.item:hover .x,.item .x:focus-visible{opacity:1}
+@media(hover:none){.item .x{opacity:.6}}
+.foot{padding:10px 12px;font-size:12px;color:var(--muted)}
+
+/* основная часть */
+main{flex:1;min-width:0;display:flex;flex-direction:column;height:100%}
+#bar{display:flex;align-items:center;gap:8px;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top,0px));min-height:52px}
+#burger{display:none;padding:6px 10px;border-radius:8px;font-size:20px}
+#ttl{font-size:15px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#scroll{flex:1;overflow-y:auto}
+#msgs{max-width:760px;margin:0 auto;padding:12px 18px 24px}
+.u{display:flex;justify-content:flex-end;margin:18px 0}
+.u div{background:var(--user);padding:10px 16px;border-radius:18px;max-width:85%;white-space:pre-wrap;overflow-wrap:anywhere}
+.a{display:flex;gap:12px;margin:22px 0;font:17px/1.7 Georgia,"Iowan Old Style","Times New Roman",serif}
+.a svg{flex:none;margin-top:6px;color:var(--text)}
+.a .c{min-width:0;overflow-wrap:anywhere}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:12px 14px;overflow-x:auto;font:13.5px/1.55 ui-monospace,Consolas,monospace;margin:10px 0}
+code{font-family:ui-monospace,Consolas,monospace;font-size:.88em;background:var(--code);padding:1px 5px;border-radius:5px}
+pre code{background:none;padding:0}
+#hello{text-align:center;padding:18vh 18px 0;color:var(--text)}
+#hello h1{font:400 clamp(28px,5vw,40px)/1.2 Georgia,serif;margin:14px 0 0;color:var(--text)}
+.dots span{display:inline-block;width:7px;height:7px;margin:10px 3px 0;border-radius:50%;background:var(--muted);animation:b 1.2s infinite}
+.dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+@keyframes b{0%,60%,100%{opacity:.25}30%{opacity:1}}
+@media(prefers-reduced-motion:reduce){.dots span{animation:none}.track i{transition:none}#side{transition:none}}
+
+/* поле ввода */
+#foot{padding:8px 14px calc(12px + env(safe-area-inset-bottom,0px))}
+#box{max-width:760px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:0 2px 14px rgba(0,0,0,.05);padding:10px 10px 10px 18px;display:flex;align-items:flex-end;gap:8px}
+#box:focus-within{border-color:var(--accent)}
+#input{flex:1;border:0;outline:0;resize:none;background:none;color:inherit;font:inherit;max-height:200px;padding:6px 0}
+#send{width:36px;height:36px;border-radius:10px;background:var(--accent);color:var(--bg);display:grid;place-items:center;flex:none}
+#send:hover{background:var(--accent-h)}
+#send:disabled{opacity:.35;cursor:not-allowed}
+.hint{max-width:760px;margin:8px auto 0;text-align:center;font-size:12px;color:var(--muted)}
+
+/* плашка лимита */
+#limit{max-width:760px;margin:0 auto 10px;border:1px solid var(--line);background:var(--card);border-radius:16px;padding:14px 18px}
+#limit[hidden]{display:none}
+#limit .lt{display:block;font:600 18px Georgia,serif}
+#limit p{margin:4px 0 12px;color:var(--muted);font-size:14.5px}
+#limit b{color:var(--text)}
+.track{height:5px;border-radius:5px;background:var(--line);overflow:hidden}
+.track i{display:block;height:100%;width:100%;background:var(--accent);transition:width 1s linear}
+
+#shade{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:10}
+@media(max-width:800px){
+  #side{position:fixed;inset:0 auto 0 0;z-index:20;transform:translateX(-100%)}
+  #side.open{transform:none;box-shadow:0 0 40px rgba(0,0,0,.25)}
+  #shade.open{display:block}
+  #burger{display:block}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><symbol id="sp" viewBox="0 0 24 24"><path d="M6 6h12L6 18h12" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol></svg>
+
+<aside id="side">
+  <div class="brand"><span class="logo"><svg width="20" height="20"><use href="#sp"/></svg></span>Zevron AI</div>
+  <button id="new"><span aria-hidden="true">＋</span> Новый чат</button>
+  <div class="label">Недавние</div>
+  <div id="list"></div>
+  <div class="foot">Чаты хранятся в этом браузере</div>
+</aside>
+<div id="shade"></div>
+
+<main>
+  <div id="bar"><button id="burger" aria-label="Открыть меню">☰</button><span id="ttl"></span></div>
+  <div id="scroll"><div id="msgs"></div></div>
+  <div id="foot">
+    <div id="limit" hidden>
+      <span class="lt">Лимит исчерпан</span>
+      <p id="lmsg"></p>
+      <div class="track"><i id="bar2"></i></div>
+    </div>
+    <div id="box">
+      <textarea id="input" rows="1" placeholder="Напиши сообщение…"></textarea>
+      <button id="send" aria-label="Отправить"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+    </div>
+    <div class="hint">AI может ошибаться. Проверяй важную информацию.</div>
+  </div>
+</main>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const store = {
+  get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const SPARK = '<svg width="22" height="22"><use href="#sp"/></svg>';
+const input = $("#input");
+
+let chats = store.get("chats", []);
+let curId = store.get("cur", null);
+let limitUntil = store.get("limitUntil", 0);
+let limitTotal = store.get("limitTotal", 0);
+let busy = false, timer;
+
+const cur = () => chats.find((c) => c.id === curId);
+const save = () => { store.set("chats", chats); store.set("cur", curId); };
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+function greet() {
+  const h = new Date().getHours();
+  return (h < 5 ? "Доброй ночи" : h < 12 ? "Доброе утро" : h < 18 ? "Добрый день" : "Добрый вечер") + ". Чем помочь?";
+}
+
+// простая разметка: ```код```, `код`, **жирный**
+function md(t) {
+  return t.split(/```/).map((p, i) => {
+    if (i % 2) return "<pre><code>" + esc(p.replace(/^[^\n]*\n/, "").trim()) + "</code></pre>";
+    return esc(p).replace(/`([^`\n]+)`/g, "<code>$1</code>").replace(/\*\*([^*\n]+)\*\*/g, "<b>$1</b>").trim().replace(/\n/g, "<br>");
+  }).join("");
+}
+
+function render() {
+  const c = cur();
+  $("#ttl").textContent = c ? c.title : "";
+  $("#list").innerHTML = [...chats].sort((a, b) => b.updated - a.updated).map((x) =>
+    `<div class="item${x.id === curId ? " on" : ""}" data-id="${esc(x.id)}"><button class="t">${esc(x.title)}</button><button class="x" aria-label="Удалить чат">✕</button></div>`).join("");
+  const m = $("#msgs");
+  if (!c || !c.messages.length) {
+    m.innerHTML = `<div id="hello"><svg width="38" height="38"><use href="#sp"/></svg><h1>${greet()}</h1></div>`;
+  } else {
+    m.innerHTML = c.messages.map((x) => x.role === "user"
+      ? `<div class="u"><div>${esc(x.content)}</div></div>`
+      : `<div class="a">${SPARK}<div class="c">${md(x.content)}</div></div>`).join("")
+      + (busy ? `<div class="a">${SPARK}<div class="c dots"><span></span><span></span><span></span></div></div>` : "");
+  }
+  $("#scroll").scrollTop = $("#scroll").scrollHeight;
+}
+
+function resize() {
+  input.style.height = "auto";
+  input.style.height = Math.min(input.scrollHeight, 200) + "px";
+}
+
+function fmt(s) {
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), c = s % 60;
+  return h ? `${h} ч ${m} мин` : m ? `${m} мин ${c} сек` : `${c} сек`;
+}
+
+// ---- лимит ----
+function startLimit(sec) {
+  limitUntil = Date.now() + sec * 1000;
+  limitTotal = sec * 1000;
+  store.set("limitUntil", limitUntil);
+  store.set("limitTotal", limitTotal);
+  tick();
+}
+
+function tick() {
+  clearInterval(timer);
+  const box = $("#limit");
+  const upd = () => {
+    const ms = limitUntil - Date.now();
+    if (ms <= 0) {
+      box.hidden = true; input.disabled = false; $("#send").disabled = false;
+      store.set("limitUntil", 0); clearInterval(timer);
+      return;
+    }
+    const left = Math.ceil(ms / 1000);
+    const at = new Date(limitUntil).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+    $("#lmsg").innerHTML = `Писать можно будет снова через <b>${fmt(left)}</b> (около ${at}).`;
+    $("#bar2").style.width = Math.min(100, (ms / (limitTotal || ms)) * 100) + "%";
+    box.hidden = false; input.disabled = true; $("#send").disabled = true;
+  };
+  upd();
+  timer = setInterval(upd, 1000);
+}
+
+// ---- отправка ----
+async function send() {
+  const text = input.value.trim();
+  if (!text || busy || Date.now() < limitUntil) return;
+  let c = cur();
+  if (!c) {
+    c = { id: uid(), title: text.slice(0, 40), messages: [], updated: Date.now() };
+    chats.unshift(c); curId = c.id;
+  }
+  c.messages.push({ role: "user", content: text });
+  c.updated = Date.now();
+  save();
+  input.value = ""; resize();
+  busy = true; render();
+  try {
+    const r = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: c.messages.slice(-20) }),
+    });
+    const d = await r.json().catch(() => ({}));
+    if (r.status === 429) {
+      // лимит: убираем сообщение из истории и возвращаем текст в поле
+      c.messages.pop();
+      if (!c.messages.length) { chats = chats.filter((x) => x !== c); curId = null; }
+      input.value = text; resize();
+      startLimit(Number(d.retryAfter) || 60);
+    } else {
+      c.messages.push({ role: "assistant", content: d.reply || "Что-то пошло не так. Попробуй ещё раз." });
+    }
+  } catch {
+    c.messages.push({ role: "assistant", content: "Нет соединения с сервером." });
+  }
+  busy = false; c.updated = Date.now();
+  save(); render();
+}
+
+// ---- события ----
+$("#send").onclick = send;
+input.addEventListener("input", resize);
+input.addEventListener("keydown", (e) => {
+  // на телефоне Enter = новая строка, на компьютере Enter = отправить
+  if (e.key === "Enter" && !e.shiftKey && !matchMedia("(pointer:coarse)").matches) { e.preventDefault(); send(); }
+});
+$("#new").onclick = () => { curId = null; save(); render(); closeSide(); input.focus(); };
+$("#list").onclick = (e) => {
+  const it = e.target.closest(".item"); if (!it) return;
+  const id = it.dataset.id;
+  if (e.target.closest(".x")) {
+    chats = chats.filter((x) => x.id !== id);
+    if (curId === id) curId = null;
+  } else { curId = id; closeSide(); }
+  save(); render();
+};
+const closeSide = () => { $("#side").classList.remove("open"); $("#shade").classList.remove("open"); };
+$("#burger").onclick = () => { $("#side").classList.add("open"); $("#shade").classList.add("open"); };
+$("#shade").onclick = closeSide;
+
+if (!cur()) curId = null;
+render();
+if (limitUntil > Date.now()) tick();
+</script>
+</body>
+</html>
